@@ -1,0 +1,26 @@
+# Source files (not needed in published package)
+src/
+scripts/
+gulpfile.js
+
+# Development files
+.git/
+.gitignore
+*.log
+npm-debug.log*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Tests (if any)
+test/
+tests/
+*.test.js
+*.spec.js

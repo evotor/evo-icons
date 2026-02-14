@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evotor icons</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#FFF0EB',
+                            100: '#FFD9CC',
+                            200: '#FFB399',
+                            300: '#FF8D66',
+                            400: '#FF8350',
+                            500: '#F05023',
+                            600: '#B61300',
+                            700: '#8A0F00',
+                            800: '#5E0A00',
+                            900: '#320500',
+                        },
+                        success: {
+                            50: '#E6FDF5',
+                            100: '#CCFBEB',
+                            200: '#99F7D7',
+                            300: '#66FABB',
+                            400: '#21C68B',
+                            500: '#00945E',
+                            600: '#007A4E',
+                            700: '#00613E',
+                            800: '#00472E',
+                            900: '#002E1F',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .icon-card:hover .copy-overlay {
+            opacity: 1;
+        }
+        
+        .copy-overlay {
+            opacity: 0;
+            transition: opacity 0.2s ease-in-out;
+        }
+        
+        .toast {
+            transform: translateX(-50%) translateY(100px);
+            transition: all 0.3s ease-in-out;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .icon-card.hidden {
+            display: none;
+        }
+
+        .icon-preview svg {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-5">
+    <!-- Header -->
+    <header class="bg-white rounded-xl shadow-md p-5 md:p-6 mb-5 text-center">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">🎨 Evo Icons</h1>
+        <p class="text-gray-500">Библиотека иконок для Evotor</p>
+        
+        <!-- Stats -->
+        <div class="flex justify-center gap-6 md:gap-8 mt-4 flex-wrap">
+            <div class="text-center">
+                <div class="text-2xl md:text-3xl font-bold text-primary-500" id="monochrome-count">0</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mt-1">Монохромных</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl md:text-3xl font-bold text-primary-500" id="color-count">0</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mt-1">Цветных</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl md:text-3xl font-bold text-primary-500" id="total-count">0</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mt-1">Всего</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls -->
+    <section class="bg-white rounded-xl shadow-md p-4 md:p-5 mb-5 flex flex-wrap gap-4 items-center">
+        <!-- Search -->
+        <div class="flex-1 min-w-[200px] relative">
+            <input 
+                type="text" 
+                id="search-input" 
+                placeholder="Поиск иконок..."
+                class="w-full px-4 py-3 pr-10 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary-500 transition-colors"
+            >
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
+        </div>
+        
+        <!-- Filters -->
+        <div class="flex flex-wrap gap-2">
+            <button class="filter-btn active px-5 py-2.5 border-2 border-primary-500 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:shadow-md" data-filter="all">
+                Все
+            </button>
+            <button class="filter-btn px-5 py-2.5 border-2 border-gray-200 bg-white text-gray-700 rounded-lg text-sm font-medium transition-all hover:border-primary-500 hover:text-primary-500" data-filter="monochrome">
+                Монохромные
+            </button>
+            <button class="filter-btn px-5 py-2.5 border-2 border-gray-200 bg-white text-gray-700 rounded-lg text-sm font-medium transition-all hover:border-primary-500 hover:text-primary-500" data-filter="color">
+                Цветные
+            </button>
+        </div>
+    </section>
+
+    <!-- Monochrome Section -->
+    <section id="monochrome-section" class="bg-white rounded-xl shadow-md p-4 md:p-5 mb-5">
+        <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            Монохромные иконки
+            <span class="text-sm text-gray-400 font-normal" id="monochrome-section-count">(0)</span>
+        </h2>
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4" id="monochrome-grid"></div>
+    </section>
+
+    <!-- Color Section -->
+    <section id="color-section" class="bg-white rounded-xl shadow-md p-4 md:p-5 mb-5">
+        <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            Цветные иконки
+            <span class="text-sm text-gray-400 font-normal" id="color-section-count">(0)</span>
+        </h2>
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4" id="color-grid"></div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast fixed bottom-8 left-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg text-sm opacity-0 z-50 shadow-lg"></div>
+
+    <!-- Scripts -->
+    <script src="icons-data.js"></script>
+    <script>
+        let allIcons = [];
+
+        function initGallery() {
+            const monochromeIcons = [];
+            for (const [name, category] of Object.entries(iconsData.CATEGORY_BY_ICON_NAME)) {
+                monochromeIcons.push({
+                    name: name,
+                    category: category,
+                    type: 'monochrome',
+                    path: `dist/monochrome/${category}/${name}.svg`
+                });
+            }
+
+            const colorIcons = iconsData.COLOR_ICONS_LIST.map(filename => {
+                const name = filename.replace('.svg', '');
+                return {
+                    name: name,
+                    type: 'color',
+                    path: `dist/color/${filename}`
+                };
+            });
+
+            allIcons = [...monochromeIcons, ...colorIcons];
+
+            // Update stats
+            document.getElementById('monochrome-count').textContent = monochromeIcons.length;
+            document.getElementById('color-count').textContent = colorIcons.length;
+            document.getElementById('total-count').textContent = allIcons.length;
+            document.getElementById('monochrome-section-count').textContent = `(${monochromeIcons.length})`;
+            document.getElementById('color-section-count').textContent = `(${colorIcons.length})`;
+
+            renderGrid('monochrome-grid', monochromeIcons);
+            renderGrid('color-grid', colorIcons);
+
+            setupSearch();
+            setupFilters();
+        }
+
+        function renderGrid(gridId, icons) {
+            const grid = document.getElementById(gridId);
+            grid.innerHTML = icons.map(icon => createIconCard(icon)).join('');
+        }
+
+        function createIconCard(icon) {
+          const previewHtml =  `<div class="icon-preview ${icon.type === 'color' ? 'w-12 h-12' : 'w-6 h-6'} mx-auto mb-2.5 flex items-center justify-center"><img src="${icon.path}" alt="${icon.name}" class="w-full h-full object-contain"></div>`;
+
+            const categoryHtml = icon.category 
+                ? `<div class="text-[10px] text-gray-400 uppercase">${icon.category}</div>` 
+                : '';
+
+            return `
+                <div class="icon-card bg-gray-50 border-2 border-transparent rounded-lg p-4 text-center cursor-pointer transition-all hover:border-primary-500 hover:bg-white hover:shadow-lg hover:shadow-primary-500/15 relative overflow-hidden" 
+                     data-name="${icon.name}" 
+                     data-type="${icon.type}" 
+                     data-category="${icon.category || ''}">
+                    ${previewHtml}
+                    <div class="text-xs text-gray-600 break-words mb-1">${icon.name}</div>
+                    ${categoryHtml}
+                    <div class="copy-overlay absolute inset-0 bg-primary-500/95 flex flex-col items-center justify-center p-2 gap-2">
+                        <button class="copy-btn bg-white border-none px-2 py-1.5 rounded text-[10px] font-semibold cursor-pointer w-full transition-transform hover:scale-105 text-primary-500 leading-tight" onclick="copyToClipboard('${icon.name}', 'shape')">
+                            📋 Имя иконки
+                        </button>
+                        <button class="copy-btn bg-white border-none px-2 py-1.5 rounded text-[10px] font-semibold cursor-pointer w-full transition-transform hover:scale-105 text-primary-500 leading-tight" onclick="copyToClipboard('${icon.path}', 'file')">
+                            📄 Путь к файлу
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function copyToClipboard(v, type) {
+          let text = v;
+          if (type === 'file') {
+            text = text.replace('dist/', '');
+          }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(type === 'shape' ? `Имя "${text}" скопировано!` : `Путь "${text}" скопирован!`);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast(type === 'shape' ? `Имя "${text}" скопировано!` : `Путь "${text}" скопирован!`);
+            });
+        }
+
+        let toastTimeout = null;
+
+        function showToast(message) {
+          const toast = document.getElementById('toast');
+          toast.textContent = message;
+          toast.classList.add('show');
+          
+          if (toastTimeout) {
+              clearTimeout(toastTimeout);
+          }
+          
+          setTimeout(() => {
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+          })
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                filterIcons(query, getActiveFilter());
+            });
+        }
+
+        function setupFilters() {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => {
+                        b.classList.remove('active', 'bg-primary-500', 'text-white', 'border-primary-500');
+                        b.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+                    });
+                    btn.classList.add('active', 'bg-primary-500', 'text-white', 'border-primary-500');
+                    btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-200');
+                    const query = document.getElementById('search-input').value.toLowerCase().trim();
+                    filterIcons(query, btn.dataset.filter);
+                });
+            });
+        }
+
+        function getActiveFilter() {
+            return document.querySelector('.filter-btn.active').dataset.filter;
+        }
+
+        function filterIcons(query, filter) {
+            const cards = document.querySelectorAll('.icon-card');
+            let monochromeVisible = 0;
+            let colorVisible = 0;
+
+            cards.forEach(card => {
+                const name = card.dataset.name.toLowerCase();
+                const type = card.dataset.type;
+                const category = (card.dataset.category || '').toLowerCase();
+                
+                const matchesQuery = !query || name.includes(query) || category.includes(query);
+                const matchesFilter = filter === 'all' || type === filter;
+                
+                if (matchesQuery && matchesFilter) {
+                    card.classList.remove('hidden');
+                    if (type === 'monochrome') monochromeVisible++;
+                    else colorVisible++;
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            document.getElementById('monochrome-section').style.display = monochromeVisible > 0 ? 'block' : 'none';
+            document.getElementById('color-section').style.display = colorVisible > 0 ? 'block' : 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initGallery();
+        });
+    </script>
+</body>
+</html>

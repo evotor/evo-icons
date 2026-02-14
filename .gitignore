@@ -1,0 +1,5 @@
+node_modules/
+dist/
+*.log
+./gallery/icons-data.js
+./gallery/dist

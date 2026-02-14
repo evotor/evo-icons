@@ -1,0 +1,38 @@
+{
+  "name": "@evotor-dev/evo-icons",
+  "version": "1.0.0",
+  "description": "Evotor icons library",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "gulp build",
+    "build:gallery": "node scripts/build-gallery.js",
+    "prepublishOnly": "npm run build",
+    "release": "semantic-release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/evotor/evo-icons.git"
+  },
+  "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^10.0.5",
+    "@semantic-release/release-notes-generator": "^14.0.0",
+    "gulp": "^4.0.2",
+    "rimraf": "^3.0.2",
+    "semantic-release": "^24.0.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./monochrome/*": "./dist/monochrome/*",
+    "./color/*": "./dist/color/*"
+  }
+}
