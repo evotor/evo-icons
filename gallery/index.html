@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -53,6 +54,11 @@
             transform: translateX(-50%) translateY(100px);
             transition: all 0.3s ease-in-out;
         }
+
+        /* Dark mode support for toast */
+        html.dark .toast {
+            background-color: #374151;
+        }
         
         .toast.show {
             transform: translateX(-50%) translateY(0);
@@ -69,40 +75,43 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 md:p-5">
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen p-4 md:p-5">
     <!-- Header -->
-    <header class="bg-white rounded-xl shadow-md p-5 md:p-6 mb-5 text-center">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">🎨 Evo Icons</h1>
-        <p class="text-gray-500">Библиотека иконок для Evotor</p>
+    <header class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-5 md:p-6 mb-5 text-center relative">
+        <button id="theme-toggle" class="absolute right-4 top-4 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Переключить тему">
+            <span id="theme-icon">🌙</span>
+        </button>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">🎨 Evo Icons</h1>
+        <p class="text-gray-500 dark:text-gray-400">Библиотека иконок для Evotor</p>
         
         <!-- Stats -->
         <div class="flex justify-center gap-6 md:gap-8 mt-4 flex-wrap">
             <div class="text-center">
                 <div class="text-2xl md:text-3xl font-bold text-primary-500" id="monochrome-count">0</div>
-                <div class="text-xs text-gray-400 uppercase tracking-wider mt-1">Монохромных</div>
+                <div class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-1">Монохромных</div>
             </div>
             <div class="text-center">
                 <div class="text-2xl md:text-3xl font-bold text-primary-500" id="color-count">0</div>
-                <div class="text-xs text-gray-400 uppercase tracking-wider mt-1">Цветных</div>
+                <div class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-1">Цветных</div>
             </div>
             <div class="text-center">
                 <div class="text-2xl md:text-3xl font-bold text-primary-500" id="total-count">0</div>
-                <div class="text-xs text-gray-400 uppercase tracking-wider mt-1">Всего</div>
+                <div class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mt-1">Всего</div>
             </div>
         </div>
     </header>
 
     <!-- Controls -->
-    <section class="bg-white rounded-xl shadow-md p-4 md:p-5 mb-5 flex flex-wrap gap-4 items-center">
+    <section class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 md:p-5 mb-5 flex flex-wrap gap-4 items-center">
         <!-- Search -->
         <div class="flex-1 min-w-[200px] relative">
             <input 
                 type="text" 
                 id="search-input" 
                 placeholder="Поиск иконок..."
-                class="w-full px-4 py-3 pr-10 border-2 border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary-500 transition-colors"
+                class="w-full px-4 py-3 pr-10 border-2 border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:border-primary-500 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
             >
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-lg">🔍</span>
         </div>
         
         <!-- Filters -->
@@ -110,39 +119,81 @@
             <button class="filter-btn active px-5 py-2.5 border-2 border-primary-500 bg-primary-500 text-white rounded-lg text-sm font-medium transition-all hover:shadow-md" data-filter="all">
                 Все
             </button>
-            <button class="filter-btn px-5 py-2.5 border-2 border-gray-200 bg-white text-gray-700 rounded-lg text-sm font-medium transition-all hover:border-primary-500 hover:text-primary-500" data-filter="monochrome">
+            <button class="filter-btn px-5 py-2.5 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-all hover:border-primary-500 hover:text-primary-500 dark:hover:text-primary-400" data-filter="monochrome">
                 Монохромные
             </button>
-            <button class="filter-btn px-5 py-2.5 border-2 border-gray-200 bg-white text-gray-700 rounded-lg text-sm font-medium transition-all hover:border-primary-500 hover:text-primary-500" data-filter="color">
+            <button class="filter-btn px-5 py-2.5 border-2 border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-all hover:border-primary-500 hover:text-primary-500 dark:hover:text-primary-400" data-filter="color">
                 Цветные
             </button>
         </div>
     </section>
 
     <!-- Monochrome Section -->
-    <section id="monochrome-section" class="bg-white rounded-xl shadow-md p-4 md:p-5 mb-5">
-        <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+    <section id="monochrome-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 md:p-5 mb-5">
+        <h2 class="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
             Монохромные иконки
-            <span class="text-sm text-gray-400 font-normal" id="monochrome-section-count">(0)</span>
+            <span class="text-sm text-gray-400 dark:text-gray-500 font-normal" id="monochrome-section-count">(0)</span>
         </h2>
         <div class="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4" id="monochrome-grid"></div>
     </section>
 
     <!-- Color Section -->
-    <section id="color-section" class="bg-white rounded-xl shadow-md p-4 md:p-5 mb-5">
-        <h2 class="text-lg md:text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+    <section id="color-section" class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 md:p-5 mb-5">
+        <h2 class="text-lg md:text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
             Цветные иконки
-            <span class="text-sm text-gray-400 font-normal" id="color-section-count">(0)</span>
+            <span class="text-sm text-gray-400 dark:text-gray-500 font-normal" id="color-section-count">(0)</span>
         </h2>
         <div class="grid grid-cols-[repeat(auto-fill,minmax(120px,1fr))] gap-4" id="color-grid"></div>
     </section>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast fixed bottom-8 left-1/2 bg-gray-800 text-white px-6 py-3 rounded-lg text-sm opacity-0 z-50 shadow-lg"></div>
+    <div id="toast" class="toast fixed bottom-8 left-1/2 bg-gray-800 dark:bg-gray-700 text-white px-6 py-3 rounded-lg text-sm opacity-0 z-50 shadow-lg"></div>
 
     <!-- Scripts -->
     <script src="icons-data.js"></script>
     <script>
+        // Theme management
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+
+        function getSystemTheme() {
+            return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function getTheme() {
+            const savedTheme = localStorage.getItem('evo-icons-theme');
+            return savedTheme || getSystemTheme();
+        }
+
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                themeIcon.textContent = '☀️';
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.textContent = '🌙';
+            }
+            localStorage.setItem('evo-icons-theme', theme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = getTheme();
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        }
+
+        // Initialize theme
+        setTheme(getTheme());
+
+        // Listen for system theme changes
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (!localStorage.getItem('evo-icons-theme')) {
+                setTheme(e.matches ? 'dark' : 'light');
+            }
+        });
+
+        themeToggle.addEventListener('click', toggleTheme);
+
         let allIcons = [];
 
         function initGallery() {
@@ -190,16 +241,16 @@
           const previewHtml =  `<div class="icon-preview ${icon.type === 'color' ? 'w-12 h-12' : 'w-6 h-6'} mx-auto mb-2.5 flex items-center justify-center"><img src="${icon.path}" alt="${icon.name}" class="w-full h-full object-contain"></div>`;
 
             const categoryHtml = icon.category 
-                ? `<div class="text-[10px] text-gray-400 uppercase">${icon.category}</div>` 
+                ? `<div class="text-[10px] text-gray-400 dark:text-gray-500 uppercase">${icon.category}</div>` 
                 : '';
 
             return `
-                <div class="icon-card bg-gray-50 border-2 border-transparent rounded-lg p-4 text-center cursor-pointer transition-all hover:border-primary-500 hover:bg-white hover:shadow-lg hover:shadow-primary-500/15 relative overflow-hidden" 
+                <div class="icon-card bg-gray-50 dark:bg-gray-700 border-2 border-transparent rounded-lg p-4 text-center cursor-pointer transition-all hover:border-primary-500 hover:bg-white dark:hover:bg-gray-600 hover:shadow-lg hover:shadow-primary-500/15 relative overflow-hidden" 
                      data-name="${icon.name}" 
                      data-type="${icon.type}" 
                      data-category="${icon.category || ''}">
                     ${previewHtml}
-                    <div class="text-xs text-gray-600 break-words mb-1">${icon.name}</div>
+                    <div class="text-xs text-gray-600 dark:text-gray-300 break-words mb-1">${icon.name}</div>
                     ${categoryHtml}
                     <div class="copy-overlay absolute inset-0 bg-primary-500/95 flex flex-col items-center justify-center p-2 gap-2">
                         <button class="copy-btn bg-white border-none px-2 py-1.5 rounded text-[10px] font-semibold cursor-pointer w-full transition-transform hover:scale-105 text-primary-500 leading-tight" onclick="copyToClipboard('${icon.name}', 'shape')">
@@ -263,10 +314,10 @@
                 btn.addEventListener('click', () => {
                     buttons.forEach(b => {
                         b.classList.remove('active', 'bg-primary-500', 'text-white', 'border-primary-500');
-                        b.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+                        b.classList.add('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300', 'border-gray-200', 'dark:border-gray-600');
                     });
                     btn.classList.add('active', 'bg-primary-500', 'text-white', 'border-primary-500');
-                    btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-200');
+                    btn.classList.remove('bg-white', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300', 'border-gray-200', 'dark:border-gray-600');
                     const query = document.getElementById('search-input').value.toLowerCase().trim();
                     filterIcons(query, btn.dataset.filter);
                 });
