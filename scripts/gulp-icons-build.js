@@ -9,11 +9,22 @@ const COLOR_ICONS_DIR_SRC = path.join(SRC_PATH, 'color');
 const FILE_POSTFIX = /(_24px)?\.svg/;
 const ATTRS_TO_CLEAN = ['fill'];
 
-const prepaceContent = (content) => {
-  const str = content.toString();
-  const svgExp = /(\<svg\s.*\>)|(\<\/svg>)|\n/g;
-  return `<svg xmlns="http://www.w3.org/2000/svg">${str.replace(svgExp, '').trim()}</svg>`;
+
+const camelize = (str) => {
+  return str
+    .replace(/\s(.)/g, (s) => s.toUpperCase())
+    .replace(/\s/g, '')
+    .replace(/^(.)/, (s) => s.toLowerCase());
 };
+
+const cleanSvgTags = (content) => {
+  const str = content.toString();
+  const svgExp = /(\<svg[^>]*\>)|(\<\/svg\>)|\n/g;
+  const result = str.replace(svgExp, '').trim();
+  return result;
+};
+
+const prepaceContent = (path) => `<svg xmlns="http://www.w3.org/2000/svg">${path}</svg>`;
 
 const getExpByAttrName = (attrName) => {
   const expBase = '=".*?"\s?';
@@ -28,6 +39,7 @@ const cleanAttrs = (str, attrNames) => {
   });
   return result;
 };
+
 
 const checkCyrilicChars = (str) => {
   if (/[а-яА-ЯЁё]/.test(str)) {
@@ -79,8 +91,7 @@ const buildMonochromeIcons = () => {
     const categoryName = childDir.toLowerCase().replace(/_|\s/, '-');
     const categoryDist = path.join(monochromeDist, categoryName);
     ensureDir(categoryDist);
-
-    icons.forEach((icon) => {
+    icons.forEach((icon, i) => {
       if (/^\..+/.test(icon)) {
         return;
       }
@@ -95,17 +106,105 @@ const buildMonochromeIcons = () => {
         );
       }
 
-      const svgContent = prepaceContent(rawIconContent);
-      const cleanPaths = cleanAttrs(svgContent, ATTRS_TO_CLEAN);
-      fs.writeFileSync(path.join(categoryDist, iconName + '.svg'), cleanPaths);
+      const svgPath = cleanSvgTags(rawIconContent);
+      const svgContent = prepaceContent(svgPath);
+
+      const cleanSvg = cleanAttrs(svgContent, ATTRS_TO_CLEAN);
+      fs.writeFileSync(path.join(categoryDist, iconName + '.svg'), cleanSvg);
+
       iconsNames[iconName] = categoryName;
       ++iconsCount;
     });
+
   });
 
   console.log('\x1b[32m', `Converted ${iconsCount} monochrome icons in ${Date.now() - timeStart} ms.`);
   return iconsNames;
 };
+
+const prepareMonochromeIconsConsts = () => {
+  const timeStart = Date.now();
+  let iconsCount = 0;
+
+  const monochromeDist = path.join(DIST_PATH, 'monochrome');
+
+  const categoryFoldersList = fs.readdirSync(monochromeDist);
+
+  if (!categoryFoldersList?.length) {
+    console.warn('Monochrome dist folder is empty');
+    return;
+  }
+
+  let libraryContent = '';
+  const categoriesList = [];
+
+  categoryFoldersList.forEach((categoryName) => {
+    const stat = fs.statSync(path.join(monochromeDist, categoryName));
+
+    if (!stat.isDirectory()) {
+      return;
+    }
+
+    const icons = fs.readdirSync(path.join(monochromeDist, categoryName));
+    if (!icons?.length) {
+      return;
+    }
+
+    const categoryVarName = camelize(categoryName.toLowerCase().replace(/-|_|\s/, ' ') + 'Icons');
+
+    libraryContent += `import { ${categoryVarName} } from './${categoryName}';\n`;
+    categoriesList.push(categoryVarName);
+    let iconsExport = '';
+    let categoryContent = `export const ${categoryVarName} = {\n  name: '${categoryName}',\n  shapes: {\n`;
+
+    icons.forEach((iconFileName, i) => {
+      if (/^\..+/.test(iconFileName)) {
+        return;
+      }
+
+      checkCyrilicChars(iconFileName);
+
+      const rawIconContent = fs.readFileSync(path.join(monochromeDist, categoryName, iconFileName));
+      const iconName = iconFileName.toLowerCase().replace(FILE_POSTFIX, '');
+      const iconVarName = camelize(
+        'icon ' + iconName.replace(/-|_|\s/g, ' '),
+      );
+      const svgPath = cleanSvgTags(rawIconContent);
+      const cleanPaths = cleanAttrs(svgPath, ATTRS_TO_CLEAN);
+
+      iconsExport +=
+        `export const ${iconVarName} = \`${cleanPaths}\`;\n`;
+      categoryContent += `    '${iconName}': ${iconVarName},\n`;
+
+      ++iconsCount;
+    });
+    categoryContent += '  }\n};\n';
+
+    fs.writeFileSync(
+      path.join(monochromeDist, categoryName, 'index.js'),
+      `${iconsExport}\n${categoryContent}`,
+    );
+
+    const typesContent = iconsExport
+      .split('\n')
+      .filter(line => line.trim())
+      .map(line => line.replace(/export const (\w+) = `.+`;/, 'export declare const $1: string;'))
+      .join('\n') + `\n\nexport declare const ${categoryVarName}: {\n  name: string;\n  shapes: {\n    [key: string]: string;\n  };\n};\n`;
+
+    fs.writeFileSync(
+      path.join(monochromeDist, categoryName, 'index.d.ts'),
+      typesContent,
+    );
+  });
+
+  libraryContent += `\nexport const icons = [ ${categoriesList.join(', ')} ];\n`;
+  fs.writeFileSync(path.join(monochromeDist, 'index.js'), libraryContent);
+
+  const rootDtsContent = `export declare const icons: readonly Array<{ name: string; shapes: { [key: string]: string } }>;`
+  fs.writeFileSync(path.join(monochromeDist, 'index.d.ts'), rootDtsContent);
+
+  console.log('\x1b[32m', `Consts prepared for ${iconsCount} monochrome icons in ${Date.now() - timeStart} ms.`);
+}
 
 const buildColorIcons = () => {
   const colorDist = path.join(DIST_PATH, 'color');
@@ -149,7 +248,7 @@ export const MONOCHROME_ICON_NAMES = ${JSON.stringify(iconNames, null, 4)};
 export const COLOR_ICONS_LIST = ${JSON.stringify(colorIcons, null, 4)};
 `;
 
-  const tsContent = `/** AUTO-GENERATED FILE - DO NOT EDIT **/
+  const typesContent = `/** AUTO-GENERATED FILE - DO NOT EDIT **/
 
 export declare const CATEGORY_BY_ICON_NAME: {
 ${iconNames.map(name => `    readonly "${name}": "${monochromeMap[name]}";`).join('\n')}
@@ -164,7 +263,7 @@ export type ColorIconName = typeof COLOR_ICONS_LIST[number];
 `;
 
   fs.writeFileSync(path.join(DIST_PATH, 'index.js'), jsContent);
-  fs.writeFileSync(path.join(DIST_PATH, 'index.d.ts'), tsContent);
+  fs.writeFileSync(path.join(DIST_PATH, 'index.d.ts'), typesContent);
 
   console.log('\x1b[32m', 'Generated index files.');
 };
@@ -174,6 +273,7 @@ const build = () => {
 
   cleanDist();
   const monochromeMap = buildMonochromeIcons();
+  prepareMonochromeIconsConsts();
   const colorList = buildColorIcons();
   generateIndexFiles(monochromeMap, colorList);
 
@@ -183,5 +283,6 @@ const build = () => {
 module.exports = {
   build,
   buildMonochromeIcons,
+  prepareMonochromeIconsConsts,
   buildColorIcons,
 };

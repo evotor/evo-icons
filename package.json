@@ -27,12 +27,46 @@
     "rimraf": "^3.0.2",
     "semantic-release": "^24.0.0"
   },
+  "typesVersions": {
+    "*": {
+      "dist/monochrome": [
+        "./dist/monochrome/index.d.ts"
+      ],
+      "dist/monochrome/*": [
+        "./dist/monochrome/*/index.d.ts"
+      ],
+      "monochrome": [
+        "./dist/monochrome/index.d.ts"
+      ],
+      "monochrome/*": [
+        "./dist/monochrome/*/index.d.ts"
+      ],
+      "*": [
+        "./dist/index.d.ts"
+      ]
+    }
+  },
   "exports": {
+    "./dist/monochrome": {
+      "types": "./dist/monochrome/index.d.ts",
+      "default": "./dist/monochrome/index.js"
+    },
+    "./dist/monochrome/*": {
+      "types": "./dist/monochrome/*/index.d.ts",
+      "default": "./dist/monochrome/*/index.js"
+    },
+    "./monochrome": {
+      "types": "./dist/monochrome/index.d.ts",
+      "default": "./dist/monochrome/index.js"
+    },
+    "./monochrome/*": {
+      "types": "./dist/monochrome/*/index.d.ts",
+      "default": "./dist/monochrome/*/index.js"
+    },
+    "./color/*": "./dist/color/*",
     ".": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "./monochrome/*": "./dist/monochrome/*",
-    "./color/*": "./dist/color/*"
+    }
   }
 }
