@@ -200,7 +200,15 @@ const prepareMonochromeIconsConsts = () => {
   libraryContent += `\nexport const icons = [ ${categoriesList.join(', ')} ];\n`;
   fs.writeFileSync(path.join(monochromeDist, 'index.js'), libraryContent);
 
-  const rootDtsContent = `export declare const icons: ReadonlyArray<{ name: string; shapes: { [key: string]: string } }>;`
+  const rootDtsContent = `export interface IconsSource {
+    [key: string]: string;
+}
+export interface IconsCategory {
+    name: string;
+    shapes: IconsSource;
+}
+export declare const icons: IconsCategory[];`
+
   fs.writeFileSync(path.join(monochromeDist, 'index.d.ts'), rootDtsContent);
 
   console.log('\x1b[32m', `Consts prepared for ${iconsCount} monochrome icons in ${Date.now() - timeStart} ms.`);
