@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/evotor/evo-icons/compare/v1.0.2...v1.0.3) (2026-02-19)
+
+
+### Bug Fixes
+
+* extract icons types ([f251aea](https://github.com/evotor/evo-icons/commit/f251aea67d204e820737a8261cf3988b918c4ac8))
+
 ## [1.0.2](https://github.com/evotor/evo-icons/compare/v1.0.1...v1.0.2) (2026-02-19)
 
 
