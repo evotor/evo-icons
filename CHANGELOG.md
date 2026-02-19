@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/evotor/evo-icons/compare/v1.0.0...v1.0.1) (2026-02-19)
+
+
+### Bug Fixes
+
+* add support for the contract that ui-kit version 6.x uses ([5e8e587](https://github.com/evotor/evo-icons/commit/5e8e587bd2d3600d1cdd9e9b898df200be4be9c7))
+
 # 1.0.0 (2026-02-17)
 
 
