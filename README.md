@@ -24,7 +24,7 @@ npm install @evotor-dev/evo-icons
     {
       "glob": "**/*",
       "input": "./node_modules/@evotor-dev/evo-icons/dist/color",
-      "output": "./assets/ui-kit/color"
+      "output": "./assets/ui-kit/color-icons"
     }
   ]
 }
