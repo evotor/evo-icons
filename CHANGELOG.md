@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/evotor/evo-icons/compare/v1.0.3...v1.1.0) (2026-09-01)
+
+
+### Features
+
+* add CRM point icon ([3ff8ebe](https://github.com/evotor/evo-icons/commit/3ff8ebee3a4fdd176421a561ffd2b059d5bff26f)), closes [#1](https://github.com/evotor/evo-icons/issues/1)
+
 ## [1.0.3](https://github.com/evotor/evo-icons/compare/v1.0.2...v1.0.3) (2026-02-19)
 
 
