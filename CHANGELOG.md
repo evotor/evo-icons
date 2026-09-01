@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/evotor/evo-icons/compare/v1.1.0...v1.1.1) (2026-09-01)
+
+
+### Bug Fixes
+
+* scale Login icon to the 24 grid ([#2](https://github.com/evotor/evo-icons/issues/2)) ([73d5971](https://github.com/evotor/evo-icons/commit/73d59715d170bb4f93e60fc9f88eb0459544c301))
+
 # [1.1.0](https://github.com/evotor/evo-icons/compare/v1.0.3...v1.1.0) (2026-09-01)
 
 
