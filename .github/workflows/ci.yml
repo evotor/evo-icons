@@ -61,3 +61,18 @@ jobs:
 
       - name: Build gallery
         run: npm run build:gallery
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Begin linting...
+        uses: actions/checkout@v4
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+
+      - name: Lint icons
+        run: npm run lint

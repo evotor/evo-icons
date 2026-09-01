@@ -1,0 +1,34 @@
+name: ✅ PR title
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-title:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Conventional Commits format
+        env:
+          # Через окружение, а не через ${{ }} в скрипте: заголовок пишет автор PR, подстановка в шелл - инъекция.
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          PATTERN='^(feat|fix|perf|refactor|docs|style|test|build|ci|chore|revert)(\([a-z0-9 ._/-]+\))?!?: .+'
+
+          if [[ ! "$PR_TITLE" =~ $PATTERN ]]; then
+            echo "::error::Заголовок PR «$PR_TITLE» не по Conventional Commits."
+            echo ""
+            echo "Заголовок PR становится сообщением squash-коммита, а по нему semantic-release считает версию."
+            echo "Формат: <тип>(<область>): <описание>, например «feat: add CRM point icon»."
+            echo ""
+            echo "Типы, поднимающие версию: feat - минорная, fix и perf - патч, «!» после типа - мажорная."
+            echo "Остальные типы (docs, style, test, build, ci, chore, refactor, revert) релиз не выпускают."
+            exit 1
+          fi
+
+          echo "Заголовок «$PR_TITLE» в порядке."

@@ -10,6 +10,7 @@
   ],
   "scripts": {
     "build": "gulp build",
+    "lint": "node scripts/lint-icons.js",
     "build:gallery": "node scripts/build-gallery.js",
     "prepublishOnly": "npm run build",
     "release": "semantic-release"
