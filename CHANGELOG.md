@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/evotor/evo-icons/compare/v1.1.1...v1.1.2) (2026-09-02)
+
+
+### Bug Fixes
+
+* update Login, add Tune, Login Outlined ([#4](https://github.com/evotor/evo-icons/issues/4)) ([d984193](https://github.com/evotor/evo-icons/commit/d98419332163e44da88a74e6a8229bcaf32d80ab))
+
 ## [1.1.1](https://github.com/evotor/evo-icons/compare/v1.1.0...v1.1.1) (2026-09-01)
 
 
