@@ -3,3 +3,4 @@ dist/
 *.log
 gallery/icons-data.js
 gallery/dist
+.idea
