@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/evotor/evo-icons/compare/v1.1.2...v1.2.0) (2026-09-08)
+
+
+### Features
+
+* add Check Rounded Square icon (EVOMRKT-9325) ([#5](https://github.com/evotor/evo-icons/issues/5)) ([332be1f](https://github.com/evotor/evo-icons/commit/332be1f746536f33ffda9b439f2f0ff3069951f3))
+* add Pin Pad and SCO icons (EVOMRKT-9280) ([#6](https://github.com/evotor/evo-icons/issues/6)) ([a92b553](https://github.com/evotor/evo-icons/commit/a92b5534339c516ee39489c07456d877142a7141))
+
 ## [1.1.2](https://github.com/evotor/evo-icons/compare/v1.1.1...v1.1.2) (2026-09-02)
 
 
