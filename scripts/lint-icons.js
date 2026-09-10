@@ -8,6 +8,12 @@ const FILE_POSTFIX = /(_24px)?\.svg/;
 const MONOCHROME_VIEW_BOX = '0 0 24 24';
 const CYRILLIC = /[а-яА-ЯЁё]/;
 const HIDDEN_FILE = /^\..+/;
+const NUMBER = '[-+]?(?:\\d*\\.)?\\d+(?:[eE][-+]?\\d+)?';
+// Только атрибуты transform и style: gradientTransform у градиента штатно содержит scale().
+const TRANSFORM_ATTR = /\s(transform|style)="([^"]*)"/g;
+const SCALE_FN = new RegExp(`scale\\(\\s*(${NUMBER})(?:[\\s,]+(${NUMBER}))?\\s*\\)`, 'g');
+const MATRIX_FN = new RegExp(`matrix\\(\\s*(${NUMBER})[\\s,]+(${NUMBER})[\\s,]+(${NUMBER})[\\s,]+(${NUMBER})`, 'g');
+const SCALE_TOLERANCE = 0.001;
 
 const errors = [];
 
@@ -28,6 +34,22 @@ const getTagNames = (svg) => {
   return [...new Set([...inner.matchAll(/<\s*([a-zA-Z:]+)/g)].map((match) => match[1]))];
 };
 
+// Отражение через scale(-1 1) размер не меняет, поэтому сравниваются модули коэффициентов.
+const getScaleFactors = (transform) => {
+  const factors = [];
+
+  [...transform.matchAll(SCALE_FN)].forEach(([, sx, sy]) => {
+    factors.push(Math.abs(Number(sx)), Math.abs(Number(sy ?? sx)));
+  });
+
+  // matrix(a b c d e f): длины первых двух столбцов и есть масштаб по осям, независимо от поворота.
+  [...transform.matchAll(MATRIX_FN)].forEach(([, a, b, c, d]) => {
+    factors.push(Math.hypot(Number(a), Number(b)), Math.hypot(Number(c), Number(d)));
+  });
+
+  return [...new Set(factors)].filter((factor) => Math.abs(factor - 1) > SCALE_TOLERANCE);
+};
+
 // Монохромные иконки сборка инлайнит в чужой документ и вырезает у них fill,
 // цветные копирует в dist отдельными файлами как есть - отсюда разный набор правил.
 const checkSvgContent = (svg, relPath, { inlined }) => {
@@ -40,6 +62,17 @@ const checkSvgContent = (svg, relPath, { inlined }) => {
   if (tags.includes('script')) {
     report(relPath, '<script> в иконке недопустим');
   }
+
+  // Иконка в чужой сетке, подогнанная скейлом (так в v1.1.1 чинили Login из сетки 20), рендерится в нужный
+  // размер, но её координаты уже не попадают на пиксели: обводка 2px становится 2.4px и иконка мылится.
+  // Лечится только перерисовкой в целевой сетке, поэтому масштаб запрещён, а сдвиг и поворот - нет.
+  [...svg.matchAll(TRANSFORM_ATTR)].forEach(([, attrName, transform]) => {
+    const factors = getScaleFactors(transform);
+
+    if (factors.length) {
+      report(relPath, `${attrName}="${transform}" масштабирует геометрию в ${factors.join(' и ')} раза: иконку нужно экспортировать сразу в целевой сетке, скейлом размер не подгоняют - координаты уходят с пиксельной сетки и линии мылятся`);
+    }
+  });
 
   if (!inlined) {
     return;
