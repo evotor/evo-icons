@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/evotor/evo-icons/compare/v1.2.0...v1.3.0) (2026-09-10)
+
+
+### Features
+
+* add info-outlined icon (EVOMRKT-9093) ([#7](https://github.com/evotor/evo-icons/issues/7)) ([eef5c74](https://github.com/evotor/evo-icons/commit/eef5c74730efe44c4abf73d00745d2a60491eab2))
+
 # [1.2.0](https://github.com/evotor/evo-icons/compare/v1.1.2...v1.2.0) (2026-09-08)
 
 
