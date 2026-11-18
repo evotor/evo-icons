@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/evotor/evo-icons/compare/v1.3.0...v1.4.0) (2026-11-18)
+
+
+### Features
+
+* add alert-circle-outlined icon (EVOMRKT-9578) ([#9](https://github.com/evotor/evo-icons/issues/9)) ([80a4681](https://github.com/evotor/evo-icons/commit/80a4681757b0b889f500405eb78d1f1119600c1e))
+
 # [1.3.0](https://github.com/evotor/evo-icons/compare/v1.2.0...v1.3.0) (2026-09-10)
 
 
